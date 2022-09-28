@@ -92,7 +92,7 @@ public class ModelClickTool : MonoBehaviour
     /// Ì§Æð
     /// </summary>
     void PointUp(Vector3 position)
-    {
+    { 
         upObj = IsClick(position);
         if (null != upObj && upObj.GetHashCode() == downObj.GetHashCode() && click && (Utils.GetMilliseconds() - startTime <= 220) && Vector3.Distance(position, inputPosition) <= 10)
         {
