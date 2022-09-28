@@ -29,6 +29,14 @@ public class ModelClickTool : MonoBehaviour
             return instance;
         }
     }
+    /// <summary>
+    /// 设置射线有效距离
+    /// </summary>
+    public float rayMaxDis = 3000;
+    public float RayMaxDistance
+    {
+        set { rayMaxDis = value; }
+    }
 
     long startTime;
     bool click;
@@ -104,7 +112,7 @@ public class ModelClickTool : MonoBehaviour
         }
         Ray ray = Camera.main.ScreenPointToRay(clickPos);
         RaycastHit rayHit;
-        if (Physics.Raycast(ray, out rayHit))
+        if (Physics.Raycast(ray, out rayHit, rayMaxDis))
         {
             return rayHit.collider.gameObject;
         }
