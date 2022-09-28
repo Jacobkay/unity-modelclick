@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+
 namespace ZTools
 {
     public class ModelClickTool : MonoBehaviour
@@ -93,7 +95,7 @@ namespace ZTools
         /// Ì§Æð
         /// </summary>
         void PointUp(Vector3 position)
-        { 
+        {
             upObj = IsClick(position);
             if (null != upObj && upObj.GetHashCode() == downObj.GetHashCode() && click && (Utils.GetMilliseconds() - startTime <= 220) && Vector3.Distance(position, inputPosition) <= 10)
             {
@@ -111,7 +113,7 @@ namespace ZTools
         /// <returns></returns>
         private GameObject IsClick(Vector2 clickPos)
         {
-            if (Utils.IsPointerOverUIGameObject())
+            if (IsPointerOverUIGameObject())
             {
                 return null;
             }
@@ -122,6 +124,34 @@ namespace ZTools
                 return rayHit.collider.gameObject;
             }
             return null;
+        }
+        bool IsPointerOverUIGameObject()
+        {
+            if (!Application.isMobilePlatform)
+            {
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    Touch touch = Input.GetTouch(i);
+                    if (EventSystem.current == null)
+                    {
+                        continue;
+                    }
+
+                    if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
         private void OnDestroy()
         {
