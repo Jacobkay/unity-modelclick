@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class ModelClickTool : MonoBehaviour
 {
-    public event Action<GameObject> ModelClick;
     /// <summary>
     /// 实例化
     /// </summary>
@@ -30,6 +29,11 @@ public class ModelClickTool : MonoBehaviour
         }
     }
     /// <summary>
+    /// 模型点击 
+    /// </summary>
+    public event Action<GameObject> ModelClick;
+
+    /// <summary>
     /// 设置射线有效距离
     /// </summary>
     public float rayMaxDis = 3000;
@@ -45,26 +49,29 @@ public class ModelClickTool : MonoBehaviour
     GameObject upObj;
     private void Update()
     {
-        if (Application.isMobilePlatform)
+        if (null != ModelClick)
         {
-            if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+            if (Application.isMobilePlatform)
             {
-                PointDown(Input.GetTouch(0).position);
+                if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+                {
+                    PointDown(Input.GetTouch(0).position);
+                }
+                else if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
+                {
+                    PointUp(Input.GetTouch(0).position);
+                }
             }
-            else if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
+            else
             {
-                PointUp(Input.GetTouch(0).position);
-            }
-        }
-        else
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                PointDown(Input.mousePosition);
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                PointUp(Input.mousePosition);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    PointDown(Input.mousePosition);
+                }
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    PointUp(Input.mousePosition);
+                }
             }
         }
     }
@@ -87,10 +94,7 @@ public class ModelClickTool : MonoBehaviour
     void PointUp(Vector3 position)
     {
         upObj = IsClick(position);
-        bool isSameModel = upObj.GetHashCode() == downObj.GetHashCode();
-        bool isClickTime = (Utils.GetMilliseconds() - startTime <= 220);
-        bool isSamePlace = Vector3.Distance(position, inputPosition) <= 10;
-        if (null != upObj && isSameModel && click && isClickTime && isSamePlace)
+        if (null != upObj && upObj.GetHashCode() == downObj.GetHashCode() && click && (Utils.GetMilliseconds() - startTime <= 220) && Vector3.Distance(position, inputPosition) <= 10)
         {
             if (null != ModelClick)
             {
