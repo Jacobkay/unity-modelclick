@@ -88,7 +88,7 @@ namespace ZTools
             if (null != downObj)
             {
                 click = true;
-                startTime = Utils.GetMilliseconds();
+                startTime = GetMilliseconds();
             }
         }
         /// <summary>
@@ -97,7 +97,7 @@ namespace ZTools
         void PointUp(Vector3 position)
         {
             upObj = IsClick(position);
-            if (null != upObj && upObj.GetHashCode() == downObj.GetHashCode() && click && (Utils.GetMilliseconds() - startTime <= 220) && Vector3.Distance(position, inputPosition) <= 10)
+            if (null != upObj && upObj.GetHashCode() == downObj.GetHashCode() && click && (GetMilliseconds() - startTime <= 220) && Vector3.Distance(position, inputPosition) <= 10)
             {
                 if (null != ModelClick)
                 {
@@ -152,6 +152,19 @@ namespace ZTools
                 }
                 return false;
             }
+        }
+        long unixBaseMillis = new DateTime(1970, 1, 1, 0, 0, 0).ToFileTimeUtc() / 10000;
+        DateTime lastCacheDateTime = new DateTime(1970, 1, 1, 0, 0, 0);
+        long lastCacheMillis = 0;
+        long GetMilliseconds()
+        {
+            DateTime now = DateTime.Now;
+            if (lastCacheDateTime != now)
+            {
+                lastCacheDateTime = now;
+                lastCacheMillis = (now.ToFileTime() / 10000) - unixBaseMillis;
+            }
+            return lastCacheMillis;
         }
         private void OnDestroy()
         {
